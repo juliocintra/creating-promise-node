@@ -10,7 +10,7 @@ const readFile = file => new Promise((resolve, reject) => {
     })
 })
 
-// CALBACK
+// CALLBACK
 const set = setTimeout(() => {
     console.log(1);
 }, 3000);
