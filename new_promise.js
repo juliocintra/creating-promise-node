@@ -14,14 +14,23 @@ class NPRomise {
         this.value = undefined;
         this.onFulFillChain = [];
         this.onRejectCallChain = [];
-
+        
         executor(this.resolve.bind(this));
     }
 
     then(onFulFill) {
         return new NPRomise(resolve => {
-            resolve(onFulFill(this.value));
-        })
+            const onFulfilled = (res) => {
+                resolve(onFulFill(res));
+                // res = this.value - pois será passado como parâmetro
+            }
+
+            if (this.state === STATE.FULFILLED) {
+                onFulfilled(this.value);
+            } else {
+                this.onFulFillChain.push(onFulfilled);
+            }
+        });
     }
 
     resolve(res) {
@@ -31,6 +40,10 @@ class NPRomise {
 
         this.state = STATE.FULFILLED;
         this.value = res;
+
+        for(const onFulfilled of this.onFulFillChain) {
+            onFulfilled(res);
+        }
     }
 }
 
